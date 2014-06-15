@@ -48,7 +48,80 @@ public boolean dispatchTouchEvent(MotionEvent ev) {
 	return super.dispatchTouchEvent(ev);
 }
 
-5.
+5.代码返回桌面 
+Intent MyIntent = new Intent(Intent.ACTION_MAIN); 
+MyIntent.addCategory(Intent.CATEGORY_HOME); 
+startActivity(MyIntent); 
+
+6.如何让标题栏文字居中 
+
+以下三句代码放到oncreat中即可 
+requestWindowFeature(Window.FEATURE_CUSTOM_TITLE); 
+setContentView(R.layout.main); 
+getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,R.layout.title); 
+注意3句代码的顺序 
+主要思想是通过一个XML实现对titile栏的位置控制 
+title.xml 
+<?xml version="1.0" encoding="utf-8"?> 
+<LinearLayout 
+xmlns:android="http://schemas.android.com/apk/res/android" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content" android:layout_gravity="center"> 
+        <TextView android:id="@+id/text" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:text="textTitle" />            
+</LinearLayout>
+
+7.android selector 
+
+完全可以实现，这用到了Android的Selector（根据组件的状态显示该状态对应的图片做为显示背景）。    
+把下面的XML文件保存成你自己命名的.xml文件（比如list_bg.xml），注意，这个文件相当于一个背景图片选择器，在系统使用时根据ListView中的列表项的状态来使用相应的背景图片，什么情况使用什么图片我在下面都进行了说明。还有，你可以把它看成是一个图片来使用，放于drawable目录下，配置背景属性 
+android:background="@drawable/list_bg"就能达到你需要的目的了。 
+
+<?xml version="1.0" encoding="utf-8" ?> 
+<selector xmlns:android="http://schemas.android.com/apk/res/android">  
+<item android:state_window_focused="false"         android:drawable="@drawable/没有焦点时的图片背景" />   
+<item android:state_focused="true" android:state_pressed="true"         
+android:drawable="@drawable/非触摸模式下获得焦点并单击时的背景图片" />   <item android:state_focused="false" android:state_pressed="true"         
+android:drawable="@drawable/触摸模式下单击时的背景图片" />   
+<item android:state_selected="true"         android:drawable="@drawable/选中时的图片背景" />   
+<item android:state_focused="true"         android:drawable="@drawable/获得焦点时的图片背景" /> 
+</selector> 
+
+8.获得手机信息: 
+
+TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE); 
+
+
+
+/* 获得可用内存 */ 
+ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE); 
+MemoryInfo info = new MemoryInfo(); 
+am.getMemoryInfo(info); 
+System.out.println("可用内存为:" + info.availMem); 
+
+/* 获得 Runtime实例 */ 
+Runtime runtime = Runtime.getRuntime(); 
+/* 获得整个程序的内存总数 */ 
+long total = runtime.totalMemory(); 
+/* 可用内存总数 */ 
+long free = runtime.freeMemory(); 
+/* 最大内存量 */ 
+long max = runtime.maxMemory(); 
+/* 通知系统回收垃圾 */ 
+runtime.gc(); 
+
+System.out.println("totalMemory ===== " + total); 
+System.out.println("freeMemory ===== " + free); 
+System.out.println("maxMemory ===== " + max); 
+
+/* 获得虚拟机 */ 
+VMRuntime vmRuntime = VMRuntime.getRuntime(); 
+/* 利用虚拟机释放软引用 */ 
+vmRuntime.gcSoftReferences(); 
+/* 获取最小可用堆内存 */ 
+vmRuntime.getMinimumHeapSize();
 	
 
 
