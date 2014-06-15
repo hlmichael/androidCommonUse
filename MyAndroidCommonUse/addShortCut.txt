@@ -1,0 +1,113 @@
+﻿首先需要添加权限
+ <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+ <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>
+ //读取系统的设置权限  
+ <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+
+
+/*
+	 * 判断桌面上是否已经存在图标
+	 */
+	private boolean isShortCutOnScreen(){
+		String uri = getAuthorityFromPermission(getApplicationContext(),"com.android.launcher.permission.READ_SETTINGS");
+		uri = "content://" + uri + "/favorites?notify=true";
+		System.out.println("内容提供者访问路径为:" + uri);
+		//访问系统的内容提供者
+		//favorites表中的intent字段 如果包含component=com.example.superflashlight/.MainActivity
+		//表示桌面上已经有图标 
+		Cursor c = getContentResolver().query(Uri.parse(uri), null, "intent like ?",new String[]{"%component=com.example.superflashlight/.MainActivity%"}, null);
+		//Cursor c = getContentResolver().query(Uri.parse(uri), null, null,null, null);
+		if (c != null && c.moveToFirst()) {
+			c.close(); 
+			return true; 
+        } 
+		/*if(c == null){
+			System.out.println("cursor为null");
+			return false;
+		}*/
+	/*	while(c.moveToNext()){
+			System.out.println("title:" + c.getString(c.getColumnIndex("title")));
+			System.out.println("intent:" + c.getString(c.getColumnIndex("intent")));
+		}*/
+		return false; 
+	}
+	
+	/*
+	 * 通过permission,获得当前手机的内容提供者路径
+	 * (因为不同的厂商 将权限的路径改变了)
+	 */
+	private String getAuthorityFromPermission(Context context, String permission) {
+		if (permission == null)
+		   return null;
+		List<PackageInfo> packs = context.getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
+		if (packs != null) {
+			for (PackageInfo pack : packs) {
+			    ProviderInfo[] providers = pack.providers;
+			    if (providers != null) {
+			    	for (ProviderInfo provider : providers) {
+			    		if (permission.equals(provider.readPermission))
+			    			return provider.authority;
+			    		if (permission.equals(provider.writePermission))
+			    			return provider.authority;
+			        }
+			    }
+		    }
+		}
+		  return null;
+	}
+	
+	/*
+	 * 添加快捷图标  到手机
+	 */
+	public void onClick_addShortCut(View v){
+		if(!isShortCutOnScreen()){
+			//系统广播接收者的 action
+			Intent installShortCut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+			//快捷方式的名称  会保存在表中的title字段
+			installShortCut.putExtra(Intent.EXTRA_SHORTCUT_NAME, "超级手电筒"); 
+			//快捷方式的图标(两种方式)
+			/*Parcelable icon = Intent.ShortcutIconResource.fromContext(getApplicationContext(), R.drawable.icon);
+			installShortCut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);*/
+			Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
+			installShortCut.putExtra(Intent.EXTRA_SHORTCUT_ICON, bitmap);
+			//不允许重复创建
+			installShortCut.putExtra("duplicate", false);
+			
+			//点击快捷方式的意图  (当然是启动本APP)
+			Intent flashLightIntent = new Intent();
+			//设置意图 第一个参数是包名  第二个参数类名
+			flashLightIntent.setClassName("com.example.superflashlight","com.example.superflashlight.MainActivity");
+			//主窗口所需要的两个属性
+			flashLightIntent.setAction(Intent.ACTION_MAIN);
+			flashLightIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+			
+			installShortCut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, flashLightIntent);
+			
+			//给系统发送广播  添加快捷方式
+			sendBroadcast(installShortCut);
+			Toast.makeText(this,"已成功添加快捷方式到桌面", Toast.LENGTH_SHORT).show();
+		}else{
+			Toast.makeText(this, "快捷方式已存在", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	/*
+	 * 删除快捷方式
+	 */
+	public void onClick_delShortCut(View v){
+		if(isShortCutOnScreen()){
+			Intent delShortCut = new Intent("com.android.launcher.action.UNINSTALL_SHORTCUT");
+			delShortCut.putExtra(Intent.EXTRA_SHORTCUT_NAME, "超级手电筒");
+			
+			Intent flashLightIntent = new Intent();
+			flashLightIntent.setClassName("com.example.superflashlight","com.example.superflashlight.MainActivity");
+			
+			delShortCut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, flashLightIntent);
+			flashLightIntent.setAction(Intent.ACTION_MAIN);
+			flashLightIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+			
+			sendBroadcast(delShortCut);
+		}else{
+			Toast.makeText(this, "没有快捷方式", Toast.LENGTH_SHORT).show();
+		}
+	}

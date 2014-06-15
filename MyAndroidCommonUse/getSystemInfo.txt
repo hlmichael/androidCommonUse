@@ -1,0 +1,14 @@
+﻿//get some android system information
+1.取屏幕的高度和宽度
+Point point = new Point();
+//获得屏幕的尺寸单位是:像素
+//将获得的尺寸放到Point 中  point.x,point.y分别是屏幕的宽和高
+getWindowManager().getDefaultDisplay().getSize(point);
+
+2.Dialog的一些方法(在onCreate方法里面调)
+ColorDrawable colorDrawable = new ColorDrawable();
+colorDrawable.setColor(Color.BLACK);
+//通过ColorDrawable 设置屏幕背景
+getWindow().setBackgroundDrawable(colorDrawable);
+//设置dialog的宽度和高度
+getWindow().setAttributes(new LayoutParams(COLOR_DIALOG_WIDTH,COLOR_DIALOG_HEIGHT,0,0,0));

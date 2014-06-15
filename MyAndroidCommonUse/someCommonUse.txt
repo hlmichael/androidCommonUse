@@ -1,0 +1,55 @@
+﻿1.自定义控件两种方式:
+  a.直接新建一个类(MyView)继承一个布局类(Layout)，然后在这个类(一般是构造方法)中new 控件,然后使用addView()将这个控件添加进去,
+  然后在布局文件中将这个类的包路径当做标签使用,就把这个控件添加进去了
+	
+  b.新建一个布局文件,里面放入自己想要的控件(目的就是把这个布局文件当做一个整体),然后新建一个类(MyView)，
+  继承一个布局类(Layout),然后在这个类的构造方法中使用LayoutInflater,将开始创建的布局文件,使用inflate方法
+  填充进去.在使用findViewById()得到自己在这个布局文件中添加的控件,然后可以给这些控件设置属性,
+  这里就不用使用addView()添加了,因为已经用LayoutInflater填充了,最后也是在布局文件中将这个类的包路径当做标签使用,
+  就把这个控件添加进去了
+
+2.自定义dialog,新建一个类继承Dialog,然后给dialog设置View，在这个类中的onCreate()方法中通过
+setContentView()来设置view，这个view可以是布局文件,也可以是自己建的一个继承自view的类
+
+3.在View中有一个onDraw()方法 可以在view中画东西 通过Paint 用canvas来画,如果需要重新绘制可以调用view的
+invalidate()方法，他会重新调用onDraw()方法 
+
+4.用户点两下才退出,覆盖finish()方法:
+
+//记录用户点击了多少次BACK键
+private int finishCount = 0;
+
+/*
+ * 重写finish()方法 达到用户点一次提醒一下,点两次才退出的效果
+*/
+@Override
+public void finish() {
+	finishCount ++;
+	//用户点一次
+	if(finishCount == 1){
+		//提醒用户
+		Toast.makeText(this, R.string.finishToast, Toast.LENGTH_SHORT).show();
+	}else if(finishCount == 2){
+		//用户连续点两次 退出
+		super.finish();
+	}else{
+		super.finish();
+	}
+}
+
+/*
+ * 如果用户误点BACK一下,然后又不想退出  这个时候用户又点了一下屏幕 
+* 我们就将finishCount设为0
+ */
+@Override
+public boolean dispatchTouchEvent(MotionEvent ev) {
+	//用户在点击BACK一次之后 又想继续使用程序 不退出 我们就将finishCount设为0
+	finishCount = 0;
+	return super.dispatchTouchEvent(ev);
+}
+
+5.
+	
+
+
+  
