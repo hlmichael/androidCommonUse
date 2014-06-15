@@ -1,0 +1,44 @@
+﻿//判断手机设备是否有闪光灯
+if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)){
+	Toast.makeText(this, "当前设备没有闪光灯", Toast.LENGTH_LONG).show();
+	return;
+}
+//打开闪光灯
+protected void openFlashlight(){
+//照相机(通过打开照相机来打开闪光灯)
+//因为照相机和闪光灯是一体的
+protected Camera mCamera;
+//打开照相机 
+mCamera = Camera.open();
+int textureId = 0;
+//图像流有两张去向
+//重点:
+//一种是显示在一个view中,就是将画面显示在屏幕上   另一种就是下面的纹理(就是不用在屏幕上显示相机)
+mCamera.setPreviewTexture(new SurfaceTexture(textureId));
+//开始照相 (这里不是照相) 这里不需要照相,只需要闪光灯
+mCamera.startPreview();
+//拿到参数
+mParameters = mCamera.getParameters();
+//点亮闪光灯
+mParameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
+//重新把参数设回去
+mCamera.setParameters(mParameters);
+}
+
+
+//关闭闪光灯
+protected void closeFlashlight(){	
+	if(mCamera != null){
+		mParameters = mCamera.getParameters();
+		//关闭闪光灯
+		mParameters.setFlashMode(Parameters.FLASH_MODE_OFF);
+		mCamera.setParameters(mParameters);
+		//停止照相
+		mCamera.stopPreview();
+		mCamera.release();
+		//设置为空,让垃圾回收器(GC)回收
+		mCamera = null; 
+	}
+	
+}
+
