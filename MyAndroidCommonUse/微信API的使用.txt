@@ -1,0 +1,18 @@
+﻿//微信sdk
+http://open.weixin.qq.com/
+可以用于分享到朋友圈 等等
+
+需要注册开发平台:
+	创建应用 : 包名 com.hulei.wechatsdk 然后将应用发布到手机
+	在手机上面安装签名生成工具 通过包名获得签名
+	com.hulei.wechat
+	ce187ed67e05c2d8879bf66bbfdfc8b9(改变之后要去官网将签名改了)
+	
+	注意:(custom debug keystore)改变了之后,在手机上生成的签名也会不同
+	
+	将微信的sample导入工程  然后改变keystore windows -> preferences -> Android
+	-> Build -> custom debug keystore(选择sample下面的debug keystore)
+	
+	https://open.weixin.qq.com/zh_CN/htmledition/res/dev/document/sdk/android/index.html
+	
+	
