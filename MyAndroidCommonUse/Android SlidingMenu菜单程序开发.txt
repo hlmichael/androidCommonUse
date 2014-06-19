@@ -1,0 +1,12 @@
+//从屏幕侧边 出来菜单  (SlidingMenu)
+github地址 https://github.com/jfeinstein10/SlidingMenu
+还需要一个ActionBarSherlock,github地址是:github.com/jakeWharton/ActionBarSherlock
+
+
+步骤
+1,将SlidingMenu-master下面的library当作一个android工程导入eclipse中(可以给它重新命名)
+2,导入ActionBarSherlock-master下面的actionbarsherlock(也可以给它重命名)
+3.创建自己的工程(将上面两个工程添加到库中(实际上上面两个工程是library(库),工程上面右键->properties->Android->
+会看到Is Library上面打了勾))
+4.上面那一步之后,会报错,这个时候将自己工程libs下面的v4包考到上面两个工程的libs下面将它们的覆盖掉
+5.可以开始了
