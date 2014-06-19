@@ -1,0 +1,7 @@
+//github上面的开源项目
+github.com/chrisbanes/Android-PullToRefresh
+
+将项目导入到eclipse中 (目录下面有4个项目)
+其中LauncherActivity项目是可以使用的,其他三个项目是库文件
+
+所以自己在使用的时候要将其他三个库文件导入到项目中去
