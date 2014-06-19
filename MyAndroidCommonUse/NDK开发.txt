@@ -1,0 +1,31 @@
+官网下载NDK的包   见项目(HelloNDK)
+在eclipse种preferences->Android->NDK->选择下载下来那个NDK的包
+默认是运行在arm cpu上面   要想在x86上面编译,在jni目录下面新建一个文件Application.mk
+在该文件中加上APP_ABI := x86
+如果是APP_ABI := x86 armeabi 表示两种cpu都可以运行
+
+使用:
+1.打开cmd->cd到项目的bin/classes目录下面 -> 使用命令 javah jni (java类(包括包名不带.java))
+例如:javah jni com.hulei.hellondk.GetString
+会生成一个(com_hulei_hellondk_GetString.h)文件
+
+2.项目右键->Android Tools -> Add Native Support
+
+3.这时候项目中有一个jni目录,将com_hulei_hellondk_GetString.h文件拷贝到这个目录下面
+在jni中可以自己创建c++文件
+4.需要在java中
+static{
+		//需要将HelloNDK load进来
+		//因为在Android.mk文件中有一段代码LOCAL_MODULE    := HelloNDK
+		//Android.mk文件是用来添加需要编译的cpp文件(当自己写了一个cpp时,需要在这个文件中添加)
+		System.loadLibrary("HelloNDK");
+	}
+
+5.在HelloNDK.cpp中include "com_hulei_hellondk_GetString.h"
+然后实现"com_hulei_hellondk_GetString.h"里面的方法
+
+
+使用ant自动生成com_hulei_hellondk_GetString.h文件并保存到项目下面的jni路径中去
+1.项目下面新建builder_headers.xml文件
+2.使用Ant Editor的方式打开,因为这样有提示
+3.执行builder_headers.xml
