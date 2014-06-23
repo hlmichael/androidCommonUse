@@ -1,0 +1,29 @@
+方法一:
+1.去phonegap.com下载phonegap
+2.去ant.apache.org下载ant(构建phonegap时需要)
+3.将D:\AndroidSDK\AndroidDev\adt-bundle-windows-x86-20140321\sdk\tools配置到系统环境变量path中
+4.将下载的ant的bin目录配置到环境变量path中
+
+5.在命令行创建项目cd到D:\PhoneGap\phonegap-2.9.1\lib\android\bin
+create.bat hello com.example.hello HelloWorld
+
+
+这时就在D:\PhoneGap\phonegap-2.9.1\lib\android\bin路径下面创建了一个项目HelloWorld
+将项目导入到eclipse中   要自己下载cordova2.9.1.jar 添加到项目libs目录下
+详见自己创建的项目HelloPhoneGap
+
+使用项目:
+assets目录下面->www->各种html css js
+res->xml->config.xml(配置文件)
+使用JqueryMobile(可以使用Dreamweaver CC)
+然后用Dreamweaver CC创建html 然后把html保存到对应的workspace项目assets/www下面  
+包括jquery的相关js和css文件一起保存到路径下,这样就会有效果了
+
+
+PhoneGap的原理实际上是使用webview
+
+
+
+方法2:(暂时有点问题)
+1.去http://nodejs.org/下载nodejs下来之后安装  D:\tools\nodejs
+2.在D:\tools\nodejs路径下面 npm install -g phonegap
