@@ -1,0 +1,186 @@
+android资源目录---assets与res/raw的不同
+
+
+assets:用于存放需要打包到应用程序的静态文件，以便部署到设备中。与res/raw不同点在于，ASSETS支持任意深度的子目录。这些文件不会生成任何资源ID，必须使用/assets开始（不包含它）的相对路径名。
+
+ 
+
+res:用于存放应用程序的资源（如图标、GUI布局等），将被打包到编译后的Java中。不支持深度子目录
+
+ 
+
+res/menu:存放基于XML的菜单描述；
+
+ 
+
+res/raw:存放通用的文件， 该文件夹内的文件将不会被编译成二进制文件，按原样复制到设备上。
+
+ 
+
+res/values:存放字符串、尺寸值。
+
+ 
+
+res/xml: 存放通用的XML文件
+
+ 
+
+ 
+
+三个特殊的资源目录 /res/xml /res/raw 和 /assets 
+
+ 
+
+在android开发中，我们离不开资源文件的使用，从drawable到string，再到layout，这些资源都为我们的开发提供了极大的便利，不过我们平时大部分时间接触的资源目录一般都是下面这三个。
+
+ 
+
+/res/drawable 
+
+/res/values 
+
+/res/layout
+
+ 
+
+但android的资源文件并不止这些，下面就为大家介绍一下另外三个资源目录
+
+ 
+
+/res/xml
+
+/res/raw
+
+/assets
+
+ 
+
+首先是/res/xml ，这个目录中大家可能偶尔用到过，这里可以用来存储xml格式的文件，并且和其他资源文件一样，这里的资源是会被编译成二进制格式放到最终的安装包里的， 我们也可以通过R类来访问这里的文件，并且解析里面的内容，例如我们在这里存放了一个名为data.xml的文件：
+
+<?xml version="1.0" encoding="utf-8"?>  
+
+<root>  
+
+        <title>Hello XML!</title>  
+
+</root>  
+
+ 
+
+随后，我们就可以通过资源ID来访问并解析这个文件了
+
+XmlResourceParser xml = getResources().getXml(R.xml.data);   
+
+xml.next();   
+
+int eventType = xml.getEventType();   
+
+boolean inTitle = false;   
+
+while(eventType != XmlPullParser.END_DOCUMENT) {   
+
+ 
+
+        //到达title节点时标记一下   
+
+        if(eventType == XmlPullParser.START_TAG) {   
+
+                if(xml.getName().equals("title")) {   
+
+                        inTitle = true;   
+
+                }   
+
+        }   
+
+ 
+
+        //如过到达标记的节点则取出内容   
+
+        if(eventType == XmlPullParser.TEXT && inTitle) {   
+
+                ((TextView)findViewById(R.id.txXml)).setText(   
+
+                                xml.getText()   
+
+                );   
+
+        }   
+
+ 
+
+        xml.next();   
+
+        eventType = xml.getEventType();   
+
+}   
+
+ 
+
+在这里，我们用资源类的getXml方法，返回了一个xml解析器，这个解析器的工作原理和SAX方式差不多, 要注意的是，这里的xml文件，最终是会被编译成二进制形式的，如果大家想让文件原样存储的话，那么就要用到下一个目录啦，那就是/res/raw目录
+
+ 
+
+        这个目录的唯一区别就是，这里的文件会原封不动的存储到设备上，不会被编译为二进制形式，访问的方式也是通过R类，下面是一个例子：
+
+((TextView)findViewById(R.id.txRaw)).setText(   
+
+                readStream(getResources().openRawResource(R.raw.rawtext))      
+
+        );   
+
+ 
+
+        private String readStream(InputStream is) {   
+
+ 
+
+                try {   
+
+                        ByteArrayOutputStream bo = new ByteArrayOutputStream();   
+
+                        int i = is.read();   
+
+                        while(i != -1) {   
+
+                                bo.write(i);   
+
+                                i = is.read();   
+
+                        }   
+
+ 
+
+                        return bo.toString();   
+
+                } catch (IOException e) {   
+
+                        return "";   
+
+                }   
+
+        }   
+
+ 
+
+ 这次使用资源类中的方法，openRawResource,返回给我们一个输入流，这样我们就可以任意读取文件中的内容了，例如上面例子中那样，原样输出文本文件中的内容。
+
+ 
+
+        当然，如果你需要更高的自由度，尽量不受android平台的约束，那么/assets这个目录就是你的首选了～
+
+        这个目录中的文件除了不会被编译成二进制形式之外，另外一点就是，访问方式是通过文件名，而不是资源ID。并且还有更重要的一点就是，大家可以在这 里任意的建立子目录，而/res目录中的资源文件是不能自行建立子目录的。如果需要这种灵活的资源存储方式，那么就看看下面这个例子：
+
+AssetManager assets = getAssets();   
+
+ 
+
+        ((TextView)findViewById(R.id.txAssets)).setText(   
+
+                readStream(assets.open("data.txt"))   
+
+        );   
+
+ 
+
+在context上下文中，调用getAssets返回一个AssetManager，然后使用open方法就可以访问需要的资源了，这里open方法是以assets目录为根的。所以上面这段代码访问的是assets目录中名为data.txt的资源文件～
