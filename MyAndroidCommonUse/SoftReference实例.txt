@@ -1,0 +1,60 @@
+package com.easymorse.list.activity;
+
+import java.lang.ref.SoftReference;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+
+public class AsyncImageLoader {
+	private static final String TAG = "AsyncImageLoader";
+	//软引用  实现图片的缓存
+	private Map<String, SoftReference<Drawable>> imageCache=new HashMap<String, SoftReference<Drawable>>();
+	
+	public Drawable loadDrawable(final String imageUrl,final ImageCallback callback){
+		//如果Map中有这张图片就直接返回
+		if(imageCache.containsKey(imageUrl)){
+			SoftReference<Drawable> softReference=imageCache.get(imageUrl);
+			if(softReference.get()!=null){
+				return softReference.get();
+			}
+		}
+		//有新线程是记得用handler
+		final Handler handler=new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				callback.imageLoaded((Drawable) msg.obj, imageUrl);
+			}
+		};
+		//没有这张图片 就新建一个线程去获取
+		new Thread(){
+			public void run() {
+				Drawable drawable=loadImageFromUrl(imageUrl);
+				imageCache.put(imageUrl, new SoftReference<Drawable>(drawable));
+				handler.sendMessage(handler.obtainMessage(0,drawable));
+			};
+		}.start();
+		return null;
+	}
+	
+	
+	protected Drawable loadImageFromUrl(String imageUrl) {
+		try {
+			//new URL(imageUrl).openStream()直接通过url打开一个网络资源
+			//然后通过Drawable.createFromStream(InputStream,"")  返回一个Drawable
+			return Drawable.createFromStream(new URL(imageUrl).openStream(),"src");
+		} catch (Exception e) {
+//			throw new RuntimeException(e);
+			Log.e(TAG, "(((((((((((((((((((("+e.toString());
+		}
+		return null;
+	}
+
+	public interface ImageCallback{
+		public void imageLoaded(Drawable imageDrawable,String imageUrl);
+	}
+}
