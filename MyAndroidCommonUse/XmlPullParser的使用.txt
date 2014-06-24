@@ -1,0 +1,134 @@
+package com.easymorse.utils;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.xmlpull.v1.XmlPullParser;
+
+import com.easymorse.beans.NewsBean;
+
+import android.util.Log;
+import android.util.Xml;
+
+
+public class ReadXmlByPullService {
+	private static final String TAG = "ReadXmlByPullService";
+
+	public static List<NewsBean> ReadXmlByPull (InputStream inputStream)throws Exception
+	{
+		List <NewsBean> newsList = null;
+		XmlPullParser xmlpull = Xml.newPullParser();
+		xmlpull.setInput(inputStream, "utf-8");
+		int eventCode = xmlpull.getEventType();
+		NewsBean newsBean = null;
+		while(eventCode!=XmlPullParser.END_DOCUMENT)
+		{
+			switch (eventCode)
+			{
+				case XmlPullParser.START_DOCUMENT:
+				{//开始文档 new数组
+					newsList =new  ArrayList<NewsBean>();
+					break;
+				}
+				case XmlPullParser.START_TAG:
+				{
+					if("item".equals(xmlpull.getName()))
+					{
+						newsBean =  new NewsBean();
+					}else if (newsBean!=null)
+					{
+						if(("title".equals(xmlpull.getName())))
+						{
+							
+//							if(xmlpull.nextText().length()>15){
+//								String checkTitle = xmlpull.nextText();
+//								Log.i(TAG, checkTitle);
+//								Log.i(TAG, "length++++++:"+checkTitle.length());
+//								Log.i(TAG, "checkTitle----:"+checkTitle);
+//								String chtitle = checkTitle.substring(15, checkTitle.length());
+//								Log.i(TAG, "chtitle:"+chtitle);
+//								String title = checkTitle.replaceAll(chtitle, "...");
+//								Log.i(TAG, "title:"+title);
+//								newsBean.setTitle(title);
+//							}else{
+								newsBean.setTitle(xmlpull.nextText());
+//							}
+							
+						}else if ("image".equals(xmlpull.getName()))
+						{
+							newsBean.setImage(xmlpull.nextText());
+						}else if ("time".equals(xmlpull.getName()))
+						{
+							newsBean.setTime(xmlpull.nextText());
+						}else if("url".equals(xmlpull.getName())){
+							newsBean.setUrl(xmlpull.nextText());
+						}
+					}
+					break;
+				}
+					
+				case XmlPullParser.END_TAG:
+				{ 
+					if("item".equals(xmlpull.getName())&&newsBean!=null)
+					{
+						newsList.add(newsBean);
+						newsBean = null;
+					}
+					break;
+				}
+			}
+			
+			eventCode = xmlpull.next();//没有结束xml文件就推到下个进行解析
+			
+			
+		}
+		
+		return newsList;
+	}
+	
+	public static int ReadXmlByPullForCount (InputStream inputStream)throws Exception
+	{
+		List <NewsBean> newsList = null;
+		XmlPullParser xmlpull = Xml.newPullParser();
+		xmlpull.setInput(inputStream, "utf-8");
+		int eventCode = xmlpull.getEventType();
+		NewsBean newsBean = null;
+		int count = 0;
+		while(eventCode!=XmlPullParser.END_DOCUMENT)
+		{
+			switch (eventCode)
+			{
+				case XmlPullParser.START_DOCUMENT:
+				{//开始文档 new数组
+					newsList =new  ArrayList<NewsBean>();
+					break;
+				}
+				case XmlPullParser.START_TAG:
+				{
+					if("item".equals(xmlpull.getName()))
+					{
+						count++;
+					}
+					break;
+				}
+					
+				case XmlPullParser.END_TAG:
+				{ 
+					if("item".equals(xmlpull.getName())&&newsBean!=null)
+					{
+						newsList.add(newsBean);
+						newsBean = null;
+					}
+					break;
+				}
+			}
+			
+			eventCode = xmlpull.next();//没有结束xml文件就推到下个进行解析
+			
+			
+		}
+		
+		return count;
+	}
+}
